@@ -1,1 +1,253 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Invoice & Quote Generator</title>
+  <meta name="description" content="Create professional invoices and price quotes for free.">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      color: #172033;
+    }
+    header {
+      background: #173b70;
+      color: white;
+      padding: 26px 16px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; }
+    header p { margin: 0; }
+    main {
+      max-width: 850px;
+      margin: 28px auto;
+      padding: 0 16px;
+    }
+    .panel {
+      background: white;
+      padding: 22px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px #14213d10;
+    }
+    h2 { margin-top: 0; font-size: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #ccd4e0;
+      border-radius: 7px;
+      font: inherit;
+      margin-bottom: 14px;
+      background: white;
+    }
+    textarea { min-height: 75px; resize: vertical; }
+    .full { grid-column: 1 / -1; }
+    button {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 7px;
+      background: #1767d2;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 4px 5px 4px 0;
+    }
+    button.secondary { background: #475569; }
+    #result {
+      border: 1px solid #d9e1ed;
+      border-radius: 8px;
+      padding: 20px;
+      overflow-wrap: anywhere;
+    }
+    .total { font-size: 24px; font-weight: bold; }
+    .item-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 8px;
+    }
+    footer { text-align: center; padding: 20px; color: #64748b; }
+    @media(max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .item-row { grid-template-columns: 1fr; gap: 0; }
+    }
+    @media print {
+      body { background: white; }
+      header, .form-panel, footer, .actions { display: none !important; }
+      main { margin: 0; max-width: none; padding: 0; }
+      .panel { box-shadow: none; border: none; padding: 0; }
+      #result { border: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Invoice & Quote Generator</h1>
+    <p>Create professional invoices and price quotes for free.</p>
+  </header>
+
+  <main>
+    <section class="panel form-panel">
+      <h2>Business Information</h2>
+      <div class="grid">
+        <div>
+          <label for="business">Your Business Name</label>
+          <input id="business" placeholder="Example: Ahmed Digital">
+        </div>
+        <div>
+          <label for="email">Your Email</label>
+          <input id="email" type="email" placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="client">Client Name</label>
+          <input id="client" placeholder="Client name">
+        </div>
+        <div>
+          <label for="docType">Document Type</label>
+          <select id="docType">
+            <option value="Invoice">Invoice</option>
+            <option value="Quote">Price Quote</option>
+          </select>
+        </div>
+        <div>
+          <label for="docNumber">Document Number</label>
+          <input id="docNumber" value="INV-001">
+        </div>
+        <div>
+          <label for="docDate">Date</label>
+          <input id="docDate" type="date">
+        </div>
+        <div class="full">
+          <label for="description">Description of Goods or Services</label>
+          <textarea id="description" placeholder="Describe your work or products"></textarea>
+        </div>
+        <div>
+          <label for="quantity">Quantity / Hours</label>
+          <input id="quantity" type="number" min="0" step="any" value="1">
+        </div>
+        <div>
+          <label for="price">Price per Unit</label>
+          <input id="price" type="number" min="0" step="0.01" value="100">
+        </div>
+        <div>
+          <label for="currency">Currency</label>
+          <select id="currency">
+            <option value="MAD">MAD (Moroccan Dirham)</option>
+            <option value="EUR">EUR (Euro)</option>
+            <option value="USD">USD (US Dollar)</option>
+            <option value="GBP">GBP (British Pound)</option>
+          </select>
+        </div>
+        <div>
+          <label for="tax">Tax (%) — optional</label>
+          <input id="tax" type="number" min="0" max="100" step="any" value="0">
+        </div>
+      </div>
+      <div class="actions">
+        <button onclick="generateDocument()">Generate Document</button>
+        <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Document Preview</h2>
+      <div id="result" aria-live="polite">
+        <p>Your invoice or quote will appear here.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Free Invoice & Quote Generator</footer>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    $("docDate").value = new Date().toISOString().slice(0, 10);
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function generateDocument() {
+      const quantity = Number($("quantity").value);
+      const price = Number($("price").value);
+      const taxRate = Number($("tax").value);
+      const currency = $("currency").value;
+
+      if (
+        $("business").value.trim() === "" ||
+        $("client").value.trim() === "" ||
+        $("description").value.trim() === ""
+      ) {
+        alert("Please enter your business name, client name, and description.");
+        return;
+      }
+
+      if (
+        $("quantity").value === "" ||
+        $("price").value === "" ||
+        $("tax").value === "" ||
+        !Number.isFinite(quantity) ||
+        !Number.isFinite(price) ||
+        !Number.isFinite(taxRate) ||
+        quantity <= 0 || price < 0 || taxRate < 0 || taxRate > 100
+      ) {
+        alert("Please check the quantity, price, and tax values.");
+        return;
+      }
+
+      const subtotal = quantity * price;
+      const taxAmount = subtotal * taxRate / 100;
+      const total = subtotal + taxAmount;
+      const money = amount => new Intl.NumberFormat("en", {
+        style: "currency",
+        currency: currency
+      }).format(amount);
+
+      const type = $("docType").value;
+      const email = $("email").value.trim();
+      const date = $("docDate").value;
+
+      $("result").innerHTML = `
+        <h2>${escapeHTML(type)}</h2>
+        <p><strong>Number:</strong> ${escapeHTML($("docNumber").value)}</p>
+        <p><strong>Date:</strong> ${escapeHTML(date)}</p>
+        <hr>
+        <p><strong>From:</strong> ${escapeHTML($("business").value)}</p>
+        ${email ? `<p><strong>Email:</strong> ${escapeHTML(email)}</p>` : ""}
+        <p><strong>To:</strong> ${escapeHTML($("client").value)}</p>
+        <hr>
+        <p><strong>Description:</strong><br>${escapeHTML($("description").value).replace(/\n/g, "<br>")}</p>
+        <p><strong>Quantity:</strong> ${quantity}</p>
+        <p><strong>Unit price:</strong> ${money(price)}</p>
+        <p><strong>Subtotal:</strong> ${money(subtotal)}</p>
+        <p><strong>Tax (${taxRate}%):</strong> ${money(taxAmount)}</p>
+        <p class="total">Total: ${money(total)}</p>
+        <p><em>${type === "Quote" ? "This is a price estimate, not a final invoice." : "Please verify applicable tax and invoicing requirements."}</em></p>
+      `;
+    }
+  </script>
+</body>
+</html>
+

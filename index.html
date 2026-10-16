@@ -2,252 +2,719 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Invoice & Quote Generator</title>
-  <meta name="description" content="Create professional invoices and price quotes for free.">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f6fb;
-      color: #172033;
-    }
-    header {
-      background: #173b70;
-      color: white;
-      padding: 26px 16px;
-      text-align: center;
-    }
-    header h1 { margin: 0 0 8px; }
-    header p { margin: 0; }
-    main {
-      max-width: 850px;
-      margin: 28px auto;
-      padding: 0 16px;
-    }
-    .panel {
-      background: white;
-      padding: 22px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 15px #14213d10;
-    }
-    h2 { margin-top: 0; font-size: 20px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 11px;
-      border: 1px solid #ccd4e0;
-      border-radius: 7px;
-      font: inherit;
-      margin-bottom: 14px;
-      background: white;
-    }
-    textarea { min-height: 75px; resize: vertical; }
-    .full { grid-column: 1 / -1; }
-    button {
-      border: 0;
-      padding: 12px 18px;
-      border-radius: 7px;
-      background: #1767d2;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 4px 5px 4px 0;
-    }
-    button.secondary { background: #475569; }
-    #result {
-      border: 1px solid #d9e1ed;
-      border-radius: 8px;
-      padding: 20px;
-      overflow-wrap: anywhere;
-    }
-    .total { font-size: 24px; font-weight: bold; }
-    .item-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 8px;
-    }
-    footer { text-align: center; padding: 20px; color: #64748b; }
-    @media(max-width: 560px) {
-      .grid { grid-template-columns: 1fr; }
-      .full { grid-column: auto; }
-      .item-row { grid-template-columns: 1fr; gap: 0; }
-    }
-    @media print {
-      body { background: white; }
-      header, .form-panel, footer, .actions { display: none !important; }
-      main { margin: 0; max-width: none; padding: 0; }
-      .panel { box-shadow: none; border: none; padding: 0; }
-      #result { border: none; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101828">
+<meta name="description" content="Create professional invoices and quotes online for free.">
+<title>InvoicePro — Invoice & Quote Generator</title>
+<style>
+:root {
+  --navy:#101828; --blue:#315efb; --bg:#f4f6fb;
+  --text:#202b3c; --muted:#667085; --border:#e4e8f0;
+  --white:#fff; --green:#16845b; --radius:16px;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size:14px;line-height:1.5;
+}
+button,input,select,textarea {font:inherit}
+button {cursor:pointer}
+.topbar {
+  background:var(--navy);color:#fff;padding:16px 5%;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.brand {display:flex;align-items:center;gap:11px;font-size:19px;font-weight:800;letter-spacing:-.5px}
+.brand-icon {
+  display:grid;place-items:center;width:38px;height:38px;border-radius:11px;
+  background:var(--blue);font-size:20px
+}
+.top-actions {display:flex;align-items:center;gap:10px}
+.lang-select {
+  background:#202d42;color:white;border:1px solid #3b4960;
+  padding:9px 12px;border-radius:9px
+}
+.top-note {color:#cbd5e1;font-size:12px}
+.container {max-width:1220px;margin:32px auto;padding:0 20px}
+.hero {margin-bottom:24px}
+.eyebrow {color:var(--blue);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;font-size:11px}
+h1 {font-size:clamp(27px,4vw,38px);letter-spacing:-1.3px;margin:7px 0}
+.hero p {margin:0;color:var(--muted);max-width:660px}
+.layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.panel {
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px;box-shadow:0 4px 16px rgba(16,24,40,.035);min-width:0
+}
+.panel-heading {display:flex;align-items:center;gap:10px;margin:0 0 20px;font-size:17px}
+.step {
+  display:grid;place-items:center;width:30px;height:30px;border-radius:9px;
+  background:#edf1ff;color:var(--blue);font-weight:800;font-size:12px
+}
+.section-title {
+  font-size:12px;font-weight:800;color:#344054;text-transform:uppercase;
+  letter-spacing:.8px;margin:22px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--border)
+}
+.section-title:first-of-type {margin-top:0}
+.grid2 {display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field {min-width:0;margin-bottom:13px}
+.field label {display:block;font-weight:650;font-size:12px;margin-bottom:6px;color:#475467}
+.field input,.field select,.field textarea {
+  width:100%;min-width:0;padding:10px 11px;border:1px solid #d7dce5;border-radius:9px;
+  background:#fff;color:var(--text);outline:none;transition:border .15s,box-shadow .15s
+}
+.field input:focus,.field select:focus,.field textarea:focus {
+  border-color:var(--blue);box-shadow:0 0 0 3px rgba(49,94,251,.1)
+}
+.field textarea {resize:vertical;min-height:70px}
+.items-head,.item-row {
+  display:grid;grid-template-columns:minmax(0,1fr) 64px 92px 34px;
+  gap:7px;align-items:center
+}
+.items-head {font-size:10px;color:var(--muted);font-weight:800;margin-bottom:7px}
+.item-row {margin-bottom:9px}
+.item-row input {
+  width:100%;min-width:0;padding:9px 7px;border:1px solid #d7dce5;border-radius:8px
+}
+.remove-item {
+  width:32px;height:34px;border:1px solid #f1d5d5;background:#fff5f5;color:#c24141;
+  border-radius:8px;font-size:18px
+}
+.btn {
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 14px;border:1px solid transparent;border-radius:9px;font-weight:750;
+  transition:transform .15s,background .15s
+}
+.btn:active {transform:scale(.98)}
+.btn-primary {background:var(--blue);color:#fff}
+.btn-primary:hover {background:#254de0}
+.btn-secondary {background:#fff;color:#344054;border-color:#d7dce5}
+.btn-secondary:hover {background:#f8fafc}
+.btn-soft {background:#edf1ff;color:#315efb}
+.btn-full {width:100%;margin-top:7px}
+.btn-small {padding:8px 10px;font-size:12px}
+.actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.status {font-size:12px;color:var(--green);min-height:18px;margin-top:10px}
+.totals-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.add-row {margin-top:4px}
+.preview-panel {position:sticky;top:18px}
+.preview-toolbar {display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+.preview-toolbar h2 {font-size:17px;margin:0}
+.preview-toolbar span {font-size:11px;color:var(--muted)}
+.paper {
+  background:#fff;border:1px solid #e4e8f0;border-radius:8px;
+  padding:clamp(18px,3vw,32px);box-shadow:0 8px 25px rgba(16,24,40,.06);
+  min-height:580px;overflow-wrap:anywhere
+}
+.paper-head {display:flex;justify-content:space-between;align-items:flex-start;gap:15px;border-bottom:2px solid var(--navy);padding-bottom:20px}
+.paper-logo {max-width:105px;max-height:65px;object-fit:contain;display:block;margin-bottom:8px}
+.paper-business {font-size:12px;color:#475467;white-space:pre-line}
+.paper-type {text-align:right}
+.paper-type h2 {font-size:clamp(24px,3vw,33px);margin:0;color:var(--navy);letter-spacing:-1px}
+.paper-type .doc-number {color:var(--muted);font-size:11px;margin-top:5px}
+.paper-parties {display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:25px 0}
+.paper-label {font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#7c8798;font-weight:800;margin-bottom:6px}
+.paper-party-name {font-weight:800;font-size:13px;margin-bottom:3px}
+.paper-party-detail {font-size:11px;color:#667085;white-space:pre-line}
+.paper-meta {font-size:11px;color:#475467;margin-top:9px}
+.paper-meta strong {color:#344054}
+.preview-table {width:100%;border-collapse:collapse;margin-top:20px;font-size:11px}
+.preview-table th {text-align:left;background:#f3f5f9;padding:10px 7px;color:#475467;font-size:10px}
+.preview-table td {padding:12px 7px;border-bottom:1px solid #edf0f5}
+.preview-table .num {text-align:right;white-space:nowrap}
+.preview-bottom {display:flex;justify-content:flex-end;margin-top:22px}
+.preview-totals {width:min(100%,260px);font-size:12px}
+.total-line {display:flex;justify-content:space-between;gap:10px;padding:6px 0;color:#475467}
+.total-line.grand {border-top:2px solid var(--navy);margin-top:6px;padding-top:12px;font-size:17px;font-weight:850;color:var(--navy)}
+.paper-notes {margin-top:35px;padding-top:15px;border-top:1px solid var(--border);font-size:11px;color:#667085;white-space:pre-line}
+.paper-footer {text-align:center;margin-top:25px;font-size:10px;color:#98a2b3}
+.empty-state {font-size:12px;color:#98a2b3;padding:15px 0}
+.footer {text-align:center;color:#98a2b3;font-size:11px;padding:30px 10px}
+.footer strong {color:#667085}
+@media(max-width:850px) {
+ .layout {grid-template-columns:1fr}
+ .preview-panel {position:static}
+ .paper {min-height:0}
+}
+@media(max-width:500px) {
+ .topbar {padding:12px 16px}
+ .top-note {display:none}
+ .container {padding:0 12px;margin:22px auto}
+ .panel {padding:15px}
+ .grid2 {grid-template-columns:1fr;gap:0}
+ .items-head,.item-row {grid-template-columns:minmax(0,1fr) 47px 73px 30px;gap:5px}
+ .item-row input {font-size:12px;padding:8px 5px}
+ .remove-item {width:29px}
+ .paper-parties {gap:10px}
+ .preview-table {font-size:10px}
+ .preview-table th,.preview-table td {padding:8px 4px}
+}
+@media print {
+ @page {size:A4;margin:12mm}
+ body {background:#fff!important;color:#111}
+ .topbar,.hero,.form-panel,.preview-toolbar,.footer,.no-print {display:none!important}
+ .container {max-width:none;padding:0;margin:0}
+ .layout {display:block}
+ .preview-panel {position:static;border:0;padding:0;box-shadow:none}
+ .panel {border:0;padding:0;box-shadow:none}
+ .paper {border:0;box-shadow:none;border-radius:0;padding:0;min-height:0}
+ .paper-head {break-inside:avoid}
+ .preview-table {break-inside:auto}
+ .preview-table tr {break-inside:avoid}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Invoice & Quote Generator</h1>
-    <p>Create professional invoices and price quotes for free.</p>
-  </header>
+<header class="topbar">
+  <div class="brand"><div class="brand-icon">▤</div><span>InvoicePro</span></div>
+  <div class="top-actions">
+    <span class="top-note" data-i18n="free">Free online invoice maker</span>
+    <select id="language" class="lang-select" aria-label="Language">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+    </select>
+  </div>
+</header>
 
-  <main>
+<main class="container">
+  <section class="hero">
+    <div class="eyebrow" data-i18n="eyebrow">SMART BUSINESS TOOLS</div>
+    <h1 data-i18n="title">Invoices made simple.</h1>
+    <p data-i18n="subtitle">Create polished invoices and quotes in minutes. Customize, preview and print — all in one place.</p>
+  </section>
+
+  <div class="layout">
     <section class="panel form-panel">
-      <h2>Business Information</h2>
-      <div class="grid">
-        <div>
-          <label for="business">Your Business Name</label>
-          <input id="business" placeholder="Example: Ahmed Digital">
+      <h2 class="panel-heading"><span class="step">01</span><span data-i18n="detailsTitle">Document details</span></h2>
+
+      <div class="section-title" data-i18n="businessSection">Your business</div>
+      <div class="field">
+        <label for="business" data-i18n="businessName">Business name *</label>
+        <input id="business" data-i18n-placeholder="businessPlaceholder" placeholder="Your business name" maxlength="120">
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="businessEmail" data-i18n="businessEmail">Business email</label>
+          <input id="businessEmail" type="email" placeholder="hello@example.com" maxlength="160">
         </div>
-        <div>
-          <label for="email">Your Email</label>
-          <input id="email" type="email" placeholder="you@example.com">
+        <div class="field">
+          <label for="businessPhone" data-i18n="phone">Phone</label>
+          <input id="businessPhone" type="tel" placeholder="+212 ..." maxlength="50">
         </div>
-        <div>
-          <label for="client">Client Name</label>
-          <input id="client" placeholder="Client name">
+      </div>
+      <div class="field">
+        <label for="businessAddress" data-i18n="businessAddress">Business address</label>
+        <textarea id="businessAddress" data-i18n-placeholder="addressPlaceholder" placeholder="Street, city, country" maxlength="400"></textarea>
+      </div>
+      <div class="field">
+        <label for="logoUrl" data-i18n="logoUrl">Logo image URL (optional)</label>
+        <input id="logoUrl" type="url" placeholder="https://example.com/logo.png" maxlength="500">
+      </div>
+
+      <div class="section-title" data-i18n="clientSection">Client information</div>
+      <div class="field">
+        <label for="client" data-i18n="clientName">Client name *</label>
+        <input id="client" data-i18n-placeholder="clientPlaceholder" placeholder="Client or company name" maxlength="120">
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="clientEmail" data-i18n="clientEmail">Client email</label>
+          <input id="clientEmail" type="email" placeholder="client@example.com" maxlength="160">
         </div>
-        <div>
-          <label for="docType">Document Type</label>
+        <div class="field">
+          <label for="clientPhone" data-i18n="clientPhone">Client phone</label>
+          <input id="clientPhone" type="tel" placeholder="+212 ..." maxlength="50">
+        </div>
+      </div>
+      <div class="field">
+        <label for="clientAddress" data-i18n="clientAddress">Client address</label>
+        <textarea id="clientAddress" data-i18n-placeholder="addressPlaceholder" placeholder="Street, city, country" maxlength="400"></textarea>
+      </div>
+
+      <div class="section-title" data-i18n="documentSection">Document settings</div>
+      <div class="grid2">
+        <div class="field">
+          <label for="docType" data-i18n="documentType">Document type</label>
           <select id="docType">
-            <option value="Invoice">Invoice</option>
-            <option value="Quote">Price Quote</option>
+            <option value="invoice" data-i18n="invoice">Invoice</option>
+            <option value="quote" data-i18n="quote">Quote</option>
           </select>
         </div>
-        <div>
-          <label for="docNumber">Document Number</label>
-          <input id="docNumber" value="INV-001">
+        <div class="field">
+          <label for="docNumber" data-i18n="documentNumber">Document number</label>
+          <input id="docNumber" maxlength="50">
         </div>
-        <div>
-          <label for="docDate">Date</label>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="docDate" data-i18n="date">Date</label>
           <input id="docDate" type="date">
         </div>
-        <div class="full">
-          <label for="description">Description of Goods or Services</label>
-          <textarea id="description" placeholder="Describe your work or products"></textarea>
-        </div>
-        <div>
-          <label for="quantity">Quantity / Hours</label>
-          <input id="quantity" type="number" min="0" step="any" value="1">
-        </div>
-        <div>
-          <label for="price">Price per Unit</label>
-          <input id="price" type="number" min="0" step="0.01" value="100">
-        </div>
-        <div>
-          <label for="currency">Currency</label>
+        <div class="field">
+          <label for="currency" data-i18n="currency">Currency</label>
           <select id="currency">
-            <option value="MAD">MAD (Moroccan Dirham)</option>
-            <option value="EUR">EUR (Euro)</option>
-            <option value="USD">USD (US Dollar)</option>
-            <option value="GBP">GBP (British Pound)</option>
+            <option value="MAD">MAD — Moroccan Dirham</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="USD">USD — US Dollar</option>
+            <option value="GBP">GBP — British Pound</option>
           </select>
         </div>
-        <div>
-          <label for="tax">Tax (%) — optional</label>
-          <input id="tax" type="number" min="0" max="100" step="any" value="0">
+      </div>
+
+      <div class="section-title" data-i18n="itemsSection">Products & services</div>
+      <div class="items-head">
+        <span data-i18n="description">Description</span>
+        <span data-i18n="qty">Qty</span>
+        <span data-i18n="unitPrice">Unit price</span>
+        <span></span>
+      </div>
+      <div id="items"></div>
+      <button type="button" class="btn btn-secondary btn-small add-row" id="addItem">＋ <span data-i18n="addItem">Add item</span></button>
+
+      <div class="section-title" data-i18n="totalsSection">Taxes & adjustments</div>
+      <div class="totals-grid">
+        <div class="field">
+          <label for="discount" data-i18n="discount">Discount (%)</label>
+          <input id="discount" type="number" min="0" max="100" step="0.01" value="0">
+        </div>
+        <div class="field">
+          <label for="tax" data-i18n="tax">Tax / VAT (%)</label>
+          <input id="tax" type="number" min="0" max="100" step="0.01" value="0">
         </div>
       </div>
+      <div class="field">
+        <label for="notes" data-i18n="notes">Notes & payment terms</label>
+        <textarea id="notes" data-i18n-placeholder="notesPlaceholder" placeholder="Thank you for your business!" maxlength="1200"></textarea>
+      </div>
+
       <div class="actions">
-        <button onclick="generateDocument()">Generate Document</button>
-        <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+        <button type="button" class="btn btn-primary" id="generate">✓ <span data-i18n="generate">Update preview</span></button>
+        <button type="button" class="btn btn-secondary" id="reset"><span data-i18n="reset">Clear form</span></button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <div class="actions">
+        <button type="button" class="btn btn-soft btn-full" id="saveDraft">▣ <span data-i18n="saveDraft">Save draft in this browser</span></button>
       </div>
     </section>
 
-    <section class="panel">
-      <h2>Document Preview</h2>
-      <div id="result" aria-live="polite">
-        <p>Your invoice or quote will appear here.</p>
+    <section class="panel preview-panel">
+      <div class="preview-toolbar">
+        <h2 data-i18n="previewTitle">Live preview</h2>
+        <span data-i18n="previewHint">Ready to print</span>
+      </div>
+      <div class="paper" id="paper">
+        <div class="paper-head">
+          <div>
+            <div class="paper-business" id="pBusiness">Your business name</div>
+            <div class="paper-party-detail" id="pBusinessContact"></div>
+          </div>
+          <div class="paper-type">
+            <h2 id="pDocType">INVOICE</h2>
+            <div class="doc-number" id="pNumber">INV-001</div>
+          </div>
+        </div>
+        <div class="paper-parties">
+          <div>
+            <div class="paper-label" id="pBillLabel">BILL TO</div>
+            <div class="paper-party-name" id="pClient">Client name</div>
+            <div class="paper-party-detail" id="pClientContact"></div>
+          </div>
+          <div>
+            <div class="paper-label" id="pDateLabel">DATE</div>
+            <div class="paper-party-name" id="pDate"></div>
+            <div class="paper-meta"><strong id="pCurrencyLabel">Currency:</strong> <span id="pCurrency">MAD</span></div>
+          </div>
+        </div>
+        <table class="preview-table">
+          <thead><tr>
+            <th id="pDescHead">DESCRIPTION</th>
+            <th class="num" id="pQtyHead">QTY</th>
+            <th class="num" id="pPriceHead">UNIT PRICE</th>
+            <th class="num" id="pAmountHead">AMOUNT</th>
+          </tr></thead>
+          <tbody id="pItems"></tbody>
+        </table>
+        <div class="preview-bottom"><div class="preview-totals" id="pTotals"></div></div>
+        <div class="paper-notes" id="pNotes"></div>
+        <div class="paper-footer" id="pFooter">Generated with InvoicePro</div>
+      </div>
+      <div class="actions no-print">
+        <button type="button" class="btn btn-primary btn-full" id="print">↗ <span data-i18n="print">Print / Save as PDF</span></button>
+        <button type="button" class="btn btn-secondary btn-full" id="downloadCsv">↓ <span data-i18n="csv">Export items as CSV</span></button>
       </div>
     </section>
-  </main>
+  </div>
+  <footer class="footer"><strong>InvoicePro</strong> · <span data-i18n="footer">Simple tools for smarter business.</span></footer>
+</main>
 
-  <footer>Free Invoice & Quote Generator</footer>
+<script>
+(() => {
+"use strict";
 
-  <script>
-    const $ = id => document.getElementById(id);
+const translations = {
+  en: {
+    free:"Free online invoice maker", eyebrow:"SMART BUSINESS TOOLS",
+    title:"Invoices made simple.", subtitle:"Create polished invoices and quotes in minutes. Customize, preview and print — all in one place.",
+    detailsTitle:"Document details", businessSection:"Your business", businessName:"Business name *",
+    businessPlaceholder:"Your business name", businessEmail:"Business email", phone:"Phone",
+    businessAddress:"Business address", addressPlaceholder:"Street, city, country", logoUrl:"Logo image URL (optional)",
+    clientSection:"Client information", clientName:"Client name *", clientPlaceholder:"Client or company name",
+    clientEmail:"Client email", clientPhone:"Client phone", clientAddress:"Client address",
+    documentSection:"Document settings", documentType:"Document type", invoice:"Invoice", quote:"Quote",
+    documentNumber:"Document number", date:"Date", currency:"Currency", itemsSection:"Products & services",
+    description:"Description", qty:"Qty", unitPrice:"Unit price", addItem:"Add item", totalsSection:"Taxes & adjustments",
+    discount:"Discount (%)", tax:"Tax / VAT (%)", notes:"Notes & payment terms",
+    notesPlaceholder:"Thank you for your business!", generate:"Update preview", reset:"Clear form",
+    saveDraft:"Save draft in this browser", previewTitle:"Live preview", previewHint:"Ready to print",
+    billTo:"BILL TO", dateLabel:"DATE", currencyLabel:"Currency:", descHead:"DESCRIPTION",
+    qtyHead:"QTY", priceHead:"UNIT PRICE", amountHead:"AMOUNT", subtotal:"Subtotal",
+    discountLabel:"Discount", taxLabel:"Tax / VAT", total:"Total", print:"Print / Save as PDF",
+    csv:"Export items as CSV", footer:"Simple tools for smarter business.", generated:"Generated with InvoicePro",
+    itemPlaceholder:"Service or product", invalid:"Please enter your business name and client name.",
+    saved:"Draft saved in this browser.", cleared:"Form cleared.", updated:"Preview updated.",
+    item:"Item", remove:"Remove item", noItems:"Add a product or service to get started.",
+    thankYou:"Thank you for your business!", numberPrefix:"INV", quotePrefix:"QUO",
+    descriptionRequired:"Please add at least one item with a description.",
+    badLogo:"The logo URL could not be loaded.", logoAlt:"Business logo"
+  },
+  fr: {
+    free:"Créateur de factures gratuit", eyebrow:"OUTILS POUR VOTRE ENTREPRISE",
+    title:"Vos factures, en toute simplicité.", subtitle:"Créez des factures et des devis professionnels en quelques minutes. Personnalisez, prévisualisez et imprimez facilement.",
+    detailsTitle:"Détails du document", businessSection:"Votre entreprise", businessName:"Nom de l’entreprise *",
+    businessPlaceholder:"Nom de votre entreprise", businessEmail:"E-mail professionnel", phone:"Téléphone",
+    businessAddress:"Adresse de l’entreprise", addressPlaceholder:"Rue, ville, pays", logoUrl:"URL du logo (facultatif)",
+    clientSection:"Informations client", clientName:"Nom du client *", clientPlaceholder:"Nom du client ou de l’entreprise",
+    clientEmail:"E-mail du client", clientPhone:"Téléphone du client", clientAddress:"Adresse du client",
+    documentSection:"Paramètres du document", documentType:"Type de document", invoice:"Facture", quote:"Devis",
+    documentNumber:"Numéro du document", date:"Date", currency:"Devise", itemsSection:"Produits et services",
+    description:"Description", qty:"Qté", unitPrice:"Prix unitaire", addItem:"Ajouter un article", totalsSection:"Taxes et ajustements",
+    discount:"Remise (%)", tax:"Taxe / TVA (%)", notes:"Notes et conditions de paiement",
+    notesPlaceholder:"Merci pour votre confiance !", generate:"Actualiser l’aperçu", reset:"Effacer le formulaire",
+    saveDraft:"Enregistrer le brouillon dans ce navigateur", previewTitle:"Aperçu en direct", previewHint:"Prêt à imprimer",
+    billTo:"FACTURÉ À", dateLabel:"DATE", currencyLabel:"Devise :", descHead:"DESCRIPTION",
+    qtyHead:"QTÉ", priceHead:"PRIX UNITAIRE", amountHead:"MONTANT", subtotal:"Sous-total",
+    discountLabel:"Remise", taxLabel:"Taxe / TVA", total:"Total", print:"Imprimer / Enregistrer en PDF",
+    csv:"Exporter les articles en CSV", footer:"Des outils simples pour une entreprise plus efficace.",
+    generated:"Généré avec InvoicePro", itemPlaceholder:"Service ou produit",
+    invalid:"Veuillez saisir le nom de votre entreprise et celui du client.",
+    saved:"Brouillon enregistré dans ce navigateur.", cleared:"Formulaire effacé.",
+    updated:"Aperçu actualisé.", item:"Article", remove:"Supprimer l’article",
+    noItems:"Ajoutez un produit ou un service pour commencer.",
+    thankYou:"Merci pour votre confiance !", numberPrefix:"FAC", quotePrefix:"DEV",
+    descriptionRequired:"Veuillez ajouter au moins un article avec une description.",
+    badLogo:"L’URL du logo n’a pas pu être chargée.", logoAlt:"Logo de l’entreprise"
+  }
+};
 
-    $("docDate").value = new Date().toISOString().slice(0, 10);
+const $ = id => document.getElementById(id);
+const storageKey = "invoicepro-draft-v2";
+let lang = "en";
+let itemCount = 0;
+let items = [];
+const defaultDate = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+};
+const t = key => translations[lang][key] || translations.en[key] || key;
+const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const safeNumber = value => {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+};
+const boundedPercent = id => Math.min(100, Math.max(0, safeNumber($(id).value)));
+const currencyFormat = amount => {
+  try {
+    return new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB", {
+      style:"currency", currency:$("currency").value,
+      minimumFractionDigits:2, maximumFractionDigits:2
+    }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${$("currency").value}`;
+  }
+};
+const formatDate = date => {
+  if (!date) return "";
+  const d = new Date(`${date}T12:00:00`);
+  return Number.isNaN(d.getTime()) ? date : new Intl.DateTimeFormat(
+    lang === "fr" ? "fr-FR" : "en-GB",
+    {day:"2-digit",month:"short",year:"numeric"}
+  ).format(d);
+};
+const getForm = () => {
+  const result = {};
+  ["business","businessEmail","businessPhone","businessAddress","logoUrl",
+   "client","clientEmail","clientPhone","clientAddress","docType","docNumber",
+   "docDate","currency","discount","tax","notes"].forEach(id => result[id] = $(id).value);
+  result.lang = lang;
+  result.items = [...items];
+  return result;
+};
 
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
+function renderItemInputs() {
+  $("items").innerHTML = "";
+  items.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `
+      <input type="text" maxlength="180" aria-label="${escapeHtml(t("description"))}"
+        placeholder="${escapeHtml(t("itemPlaceholder"))}" data-index="${index}" data-key="description"
+        value="${escapeHtml(item.description)}">
+      <input type="number" min="0" step="1" aria-label="${escapeHtml(t("qty"))}"
+        data-index="${index}" data-key="qty" value="${escapeHtml(item.qty)}">
+      <input type="number" min="0" step="0.01" aria-label="${escapeHtml(t("unitPrice"))}"
+        data-index="${index}" data-key="price" value="${escapeHtml(item.price)}">
+      <button type="button" class="remove-item" data-remove="${index}" aria-label="${escapeHtml(t("remove"))}">×</button>`;
+    $("items").appendChild(row);
+  });
+}
+
+function addItem(description="", qty="1", price="0") {
+  items.push({description,qty,price});
+  renderItemInputs();
+  updatePreview();
+}
+
+function totals() {
+  const subtotal = items.reduce((sum, item) =>
+    sum + safeNumber(item.qty) * safeNumber(item.price), 0);
+  const discount = subtotal * boundedPercent("discount") / 100;
+  const taxable = Math.max(0, subtotal - discount);
+  const tax = taxable * boundedPercent("tax") / 100;
+  return {subtotal, discount, tax, total:taxable + tax};
+}
+
+function updatePreview() {
+  const business = $("business").value.trim() || t("businessPlaceholder");
+  const client = $("client").value.trim() || t("clientPlaceholder");
+  $("pBusiness").textContent = business;
+  $("pClient").textContent = client;
+  $("pBusinessContact").textContent = [
+    $("businessAddress").value.trim(),
+    $("businessEmail").value.trim(),
+    $("businessPhone").value.trim()
+  ].filter(Boolean).join("\n");
+  $("pClientContact").textContent = [
+    $("clientAddress").value.trim(),
+    $("clientEmail").value.trim(),
+    $("clientPhone").value.trim()
+  ].filter(Boolean).join("\n");
+
+  const logoUrl = $("logoUrl").value.trim();
+  const logoHost = $("pBusiness").parentElement;
+  let logo = $("previewLogo");
+  if (logoUrl && /^https?:\/\/\S+$/i.test(logoUrl)) {
+    if (!logo) {
+      logo = document.createElement("img");
+      logo.id = "previewLogo";
+      logo.className = "paper-logo";
+      logo.alt = t("logoAlt");
+      logoHost.insertBefore(logo, logoHost.firstChild);
     }
+    if (logo.src !== logoUrl) logo.src = logoUrl;
+    logo.hidden = false;
+    logo.onerror = () => { logo.hidden = true; };
+  } else if (logo) {
+    logo.hidden = true;
+  }
 
-    function generateDocument() {
-      const quantity = Number($("quantity").value);
-      const price = Number($("price").value);
-      const taxRate = Number($("tax").value);
-      const currency = $("currency").value;
+  const isQuote = $("docType").value === "quote";
+  $("pDocType").textContent = isQuote ? t("quote").toLocaleUpperCase(lang) : t("invoice").toLocaleUpperCase(lang);
+  $("pNumber").textContent = $("docNumber").value.trim() || (isQuote ? "QUO-001" : "INV-001");
+  $("pBillLabel").textContent = t("billTo");
+  $("pDateLabel").textContent = t("dateLabel");
+  $("pCurrencyLabel").textContent = t("currencyLabel");
+  $("pDate").textContent = formatDate($("docDate").value);
+  $("pCurrency").textContent = $("currency").value;
+  $("pDescHead").textContent = t("descHead");
+  $("pQtyHead").textContent = t("qtyHead");
+  $("pPriceHead").textContent = t("priceHead");
+  $("pAmountHead").textContent = t("amountHead");
 
-      if (
-        $("business").value.trim() === "" ||
-        $("client").value.trim() === "" ||
-        $("description").value.trim() === ""
-      ) {
-        alert("Please enter your business name, client name, and description.");
-        return;
-      }
+  const validItems = items.filter(i => i.description.trim());
+  $("pItems").innerHTML = validItems.length ? validItems.map(item => `
+    <tr>
+      <td>${escapeHtml(item.description)}</td>
+      <td class="num">${escapeHtml(item.qty || "0")}</td>
+      <td class="num">${currencyFormat(safeNumber(item.price))}</td>
+      <td class="num">${currencyFormat(safeNumber(item.qty)*safeNumber(item.price))}</td>
+    </tr>`).join("") :
+    `<tr><td colspan="4" class="empty-state">${escapeHtml(t("noItems"))}</td></tr>`;
 
-      if (
-        $("quantity").value === "" ||
-        $("price").value === "" ||
-        $("tax").value === "" ||
-        !Number.isFinite(quantity) ||
-        !Number.isFinite(price) ||
-        !Number.isFinite(taxRate) ||
-        quantity <= 0 || price < 0 || taxRate < 0 || taxRate > 100
-      ) {
-        alert("Please check the quantity, price, and tax values.");
-        return;
-      }
+  const sums = totals();
+  const rows = [
+    [t("subtotal"), currencyFormat(sums.subtotal)]
+  ];
+  if (sums.discount > 0) rows.push([`${t("discountLabel")} (${boundedPercent("discount")}%)`, "− " + currencyFormat(sums.discount)]);
+  if (boundedPercent("tax") > 0) rows.push([`${t("taxLabel")} (${boundedPercent("tax")}%)`, currencyFormat(sums.tax)]);
+  $("pTotals").innerHTML = rows.map(([label,value]) =>
+    `<div class="total-line"><span>${escapeHtml(label)}</span><span>${escapeHtml(value)}</span></div>`
+  ).join("") + `<div class="total-line grand"><span>${escapeHtml(t("total"))}</span><span>${escapeHtml(currencyFormat(sums.total))}</span></div>`;
 
-      const subtotal = quantity * price;
-      const taxAmount = subtotal * taxRate / 100;
-      const total = subtotal + taxAmount;
-      const money = amount => new Intl.NumberFormat("en", {
-        style: "currency",
-        currency: currency
-      }).format(amount);
+  const notes = $("notes").value.trim();
+  $("pNotes").textContent = notes || t("thankYou");
+  $("pFooter").textContent = t("generated");
+}
 
-      const type = $("docType").value;
-      const email = $("email").value.trim();
-      const date = $("docDate").value;
+function applyLanguage() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if (translations[lang][key]) el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  $("language").value = lang;
+  renderItemInputs();
+  updatePreview();
+}
 
-      $("result").innerHTML = `
-        <h2>${escapeHTML(type)}</h2>
-        <p><strong>Number:</strong> ${escapeHTML($("docNumber").value)}</p>
-        <p><strong>Date:</strong> ${escapeHTML(date)}</p>
-        <hr>
-        <p><strong>From:</strong> ${escapeHTML($("business").value)}</p>
-        ${email ? `<p><strong>Email:</strong> ${escapeHTML(email)}</p>` : ""}
-        <p><strong>To:</strong> ${escapeHTML($("client").value)}</p>
-        <hr>
-        <p><strong>Description:</strong><br>${escapeHTML($("description").value).replace(/\n/g, "<br>")}</p>
-        <p><strong>Quantity:</strong> ${quantity}</p>
-        <p><strong>Unit price:</strong> ${money(price)}</p>
-        <p><strong>Subtotal:</strong> ${money(subtotal)}</p>
-        <p><strong>Tax (${taxRate}%):</strong> ${money(taxAmount)}</p>
-        <p class="total">Total: ${money(total)}</p>
-        <p><em>${type === "Quote" ? "This is a price estimate, not a final invoice." : "Please verify applicable tax and invoicing requirements."}</em></p>
-      `;
+function showStatus(message) {
+  $("status").textContent = message;
+}
+
+function saveDraft(showMessage=true) {
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(getForm()));
+    if (showMessage) showStatus(t("saved"));
+  } catch {
+    showStatus(lang === "fr" ? "Impossible d’enregistrer le brouillon dans ce navigateur." :
+      "Could not save the draft in this browser.");
+  }
+}
+
+function loadDraft() {
+  try {
+    const saved = localStorage.getItem(storageKey);
+    if (!saved) return false;
+    const data = JSON.parse(saved);
+    if (!data || typeof data !== "object") return false;
+    const fields = ["business","businessEmail","businessPhone","businessAddress","logoUrl",
+      "client","clientEmail","clientPhone","clientAddress","docType","docNumber",
+      "docDate","currency","discount","tax","notes"];
+    fields.forEach(id => {
+      if (typeof data[id] === "string" && $(id)) $(id).value = data[id];
+    });
+    if (["MAD","EUR","USD","GBP"].includes(data.currency)) $("currency").value = data.currency;
+    if (data.docType === "invoice" || data.docType === "quote") $("docType").value = data.docType;
+    if (Array.isArray(data.items)) {
+      items = data.items.slice(0,50).map(item => ({
+        description:String(item.description || "").slice(0,180),
+        qty:String(item.qty ?? "1"),
+        price:String(item.price ?? "0")
+      }));
     }
-  </script>
+    if (data.lang === "fr" || data.lang === "en") lang = data.lang;
+    return true;
+  } catch { return false; }
+}
+
+$("language").addEventListener("change", event => {
+  lang = event.target.value === "fr" ? "fr" : "en";
+  applyLanguage();
+  saveDraft(false);
+});
+$("addItem").addEventListener("click", () => {
+  if (items.length >= 50) {
+    showStatus(lang === "fr" ? "Limite de 50 articles atteinte." : "Maximum of 50 items reached.");
+    return;
+  }
+  addItem();
+  saveDraft(false);
+});
+$("items").addEventListener("input", event => {
+  const target = event.target;
+  if (!target.dataset.key) return;
+  const index = Number(target.dataset.index);
+  if (!items[index]) return;
+  items[index][target.dataset.key] = target.value;
+  updatePreview();
+  saveDraft(false);
+});
+$("items").addEventListener("click", event => {
+  const button = event.target.closest("[data-remove]");
+  if (!button) return;
+  items.splice(Number(button.dataset.remove),1);
+  renderItemInputs();
+  updatePreview();
+  saveDraft(false);
+});
+$("generate").addEventListener("click", () => {
+  if (!$("business").value.trim() || !$("client").value.trim()) {
+    showStatus(t("invalid"));
+    return;
+  }
+  if (!items.some(i => i.description.trim())) {
+    showStatus(t("descriptionRequired"));
+    return;
+  }
+  updatePreview();
+  saveDraft(false);
+  showStatus(t("updated"));
+});
+$("saveDraft").addEventListener("click", () => saveDraft(true));
+$("print").addEventListener("click", () => {
+  updatePreview();
+  window.print();
+});
+$("reset").addEventListener("click", () => {
+  if (!confirm(lang === "fr" ? "Effacer toutes les données du formulaire ?" : "Clear all form data?")) return;
+  try { localStorage.removeItem(storageKey); } catch {}
+  ["business","businessEmail","businessPhone","businessAddress","logoUrl","client","clientEmail",
+   "clientPhone","clientAddress","notes"].forEach(id => $(id).value = "");
+  $("docType").value = "invoice";
+  $("docNumber").value = "INV-001";
+  $("docDate").value = defaultDate();
+  $("currency").value = "MAD";
+  $("discount").value = "0";
+  $("tax").value = "0";
+  items = [{description:"",qty:"1",price:"0"}];
+  renderItemInputs();
+  updatePreview();
+  showStatus(t("cleared"));
+});
+$("downloadCsv").addEventListener("click", () => {
+  const rows = [
+    [t("description"),t("qty"),t("unitPrice"),t("amount")],
+    ...items.map(i => [i.description,i.qty,i.price,
+      (safeNumber(i.qty)*safeNumber(i.price)).toFixed(2)])
+  ];
+  const csv = rows.map(row => row.map(value =>
+    `"${String(value ?? "").replace(/"/g,'""')}"`
+  ).join(",")).join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "invoicepro-items.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+[
+ "business","businessEmail","businessPhone","businessAddress","logoUrl",
+ "client","clientEmail","clientPhone","clientAddress","docType","docNumber",
+ "docDate","currency","discount","tax","notes"
+].forEach(id => {
+  $(id).addEventListener("input", () => {
+    updatePreview();
+    saveDraft(false);
+  });
+  $(id).addEventListener("change", () => {
+    updatePreview();
+    saveDraft(false);
+  });
+});
+
+$("docDate").value = defaultDate();
+$("docNumber").value = "INV-001";
+items = [{description:"",qty:"1",price:"0"}];
+loadDraft();
+applyLanguage();
+})();
+</script>
 </body>
 </html>
-
